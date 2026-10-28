@@ -16,27 +16,22 @@ def compute_credibility_index(row):
     Higher indicates higher public engagement and consistency;
     lower indicates negative feedback or insufficient data.
     """
-    score = 50.0  # Base neutral score
+    score = 50.0  
 
-    # 1. Rating contribution (-20 to +20)
     rating = row.get("avg_review_rating", 0.0)
     if rating > 0:
         score += (rating - 3.0) * 10
 
-    # 2. NLP Sentiment contribution (-20 to +20)
     sentiment = row.get("mean_sentiment", 0.0)
     score += sentiment * 20
 
-    # 3. Fraud keyword penalty (up to -30 points)
     kw_count = row.get("total_fraud_keywords", 0)
     score -= min(kw_count * 10, 30)
 
-    # 4. Contact / website completeness bonus (+10 points)
     has_phone = row.get("has_phone_num", 0)
     has_web = row.get("has_valid_website", 0)
     score += (has_phone * 5) + (has_web * 5)
 
-    # 5. Low/unverified feedback penalty
     reviews_count = row.get("authentic_review_count", 0)
     if reviews_count == 0:
         score -= 15
